@@ -7,7 +7,7 @@ export type OpenAIChatMessage = {
 
 export async function chatWithLlama(messages: OpenAIChatMessage[]): Promise<string> {
   try {
-    const res = await axios.post("http://localhost:11434/api/chat", {
+    const res = await axios.post("http://127.0.0.1:11434/api/chat", {
       model: "llama3",
       messages,
       stream: false,
