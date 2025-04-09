@@ -48,7 +48,26 @@ curl http://localhost:11434
 
 ---
 
-### 4. Backend 실행
+### 4. MongoDB 접속 설정 (.env)
+MongoDB에서 컬렉션 정보를 자동으로 불러오려면 `.env` 파일에 아래 정보를 설정해야 합니다:
+
+`.env.example` 예시:
+```env
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB=your_database_name
+# 인증이 필요한 경우:
+# MONGODB_URI=mongodb://username:password@localhost:27017
+```
+
+> 복사하여 `.env` 파일로 만들어 사용하세요:
+```bash
+cp server/.env.example server/.env
+```
+
+---
+
+### 5. Backend 실행
 ```bash
 cd server
 cp .env.example .env  # 또는 직접 PORT 설정
@@ -60,7 +79,7 @@ npm run dev
 
 ---
 
-### 5. Frontend 실행
+### 6. Frontend 실행
 ```bash
 cd ../client
 npm install
@@ -71,24 +90,19 @@ npm run dev
 
 ---
 
-## 📦 MongoDB 컬러션 정보 업데이트
+## 📦 MongoDB 컬렉션 정보 자동 업데이트
 
-현재 `server/src/routes/generate.ts` 파일에 컬러션 정보가 하드코드되어 있습니다.
+프론트엔드의 `🔄 컬렉션 동기화` 버튼을 클릭하면 MongoDB에 접속하여 다음 동작을 수행합니다:
+- 모든 컬렉션 목록 불러오기
+- 각 컬렉션에서 샘플 문서 하나 추출
+- 키와 값을 분석하여 필드명 및 타입 추론
+- `collections.json` 파일 자동 갱신
 
-예:
-```ts
-컨러션 이름은 'users'이고, 필드는 email(string), name(string), created_at(date)
-```
-
-이 방면을 추후 다음 방식으로 확장할 수 있습니다:
-- JSON 파일에서 컬러션 목록을 불러오도록 변경
-- 또는 `/collections` API를 추가하여 프러티엔드에서 등록/편집 가능하게 구성
-
-필요 시 해당 기능도 추가로 지원 가능합니다.
+> `.env`에 MongoDB 접속 정보가 정확히 설정되어 있어야 작동합니다.
 
 ---
 
-## 🚀 실행 방법
+## 🚀 실행 방법 요약
 
 ### ✅ 1. Local 개발 모드 실행 (스크립트 하나로 실행)
 

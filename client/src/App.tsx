@@ -98,6 +98,13 @@ function App() {
     setQuestion("");
   };
 
+  const syncCollections = async () => {
+    if (!confirm("MongoDB에서 컬렉션 정보를 새로 불러올까요?")) return;
+    await axios.get("http://localhost:3001/collections/refresh");
+    await fetchCollections();
+    alert("✅ 컬렉션 동기화 완료");
+  };
+
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>MongoDB 쿼리 생성기 (LLaMA3)</h1>
@@ -173,14 +180,44 @@ name:string,price:number,stock:number
         </div>
       )}
 
-      <h3 style={{ marginTop: "2rem" }}>📂 등록된 컬렉션 목록</h3>
+      <button onClick={syncCollections} style={{ marginTop: "2rem", marginBottom: "1rem" }}>
+        🔄 컬렉션 동기화
+      </button>
+
+      <h3 style={{ marginTop: "1rem" }}>📂 등록된 컬렉션 목록</h3>
       <ul>
-        {collections.map((col) => (
+        {collections.map((col: Collection) => (
           <li key={col.id}>
-            <strong>{col.name}</strong> —{" "}
-            {col.fields.map((f) => `${f.name}:${f.type}`).join(", ")}
-            <button style={{ marginLeft: "1rem" }} onClick={() => handleEdit(col)}>수정</button>
-            <button style={{ marginLeft: "0.5rem", color: "red" }} onClick={() => handleDelete(col.id)}>삭제</button>
+            <details style={{ marginBottom: "0.5rem" }}>
+              <summary style={{ cursor: "pointer", fontWeight: "bold" }}>
+                {col.name}
+                <button
+                  style={{ marginLeft: "1rem" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEdit(col);
+                  }}
+                >
+                  수정
+                </button>
+                <button
+                  style={{ marginLeft: "0.5rem", color: "red" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete(col.id);
+                  }}
+                >
+                  삭제
+                </button>
+              </summary>
+              <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+                {col.fields.map((f: Field, idx: number) => (
+                  <li key={idx}>
+                    <code>{f.name}</code>: <code>{f.type}</code>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </li>
         ))}
       </ul>

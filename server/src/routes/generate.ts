@@ -1,60 +1,54 @@
-
 import { Router } from "express";
-import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
+import { chatWithLlama, OpenAIChatMessage } from "../llm";
 
 const router = Router();
+const collectionsFile = path.join(__dirname, "..", "collections.json");
 
 router.post("/", async (req, res) => {
-  const { question } = req.body;
-  const collectionsFile = path.join(__dirname, "..", "collections.json");
+  const { question, collection } = req.body;
 
-  const collections = JSON.parse(fs.readFileSync(collectionsFile, "utf-8"));
+  const formattedCollections = collection
+    ? `${collection.name}: ` + collection.fields.map((f: { name: string; type: string }) => `${f.name}(${f.type})`).join(', ')
+    : '모든 컬렉션에서 검색';
 
-  const formattedCollections = collections.map((col: any, i: number) => {
-    const fieldList = col.fields
-      .map((f: any) => typeof f === "string" ? f : `${f.name} (${f.type})`)
-      .join(", ");
-    return `${i + 1}. ${col.name}: ${fieldList}`;
-  }).join("\n");
+  const prompt = `다음은 MongoDB 컬렉션 정보를 기반으로 사용자의 자연어 질문을 MongoDB 콘솔 명령어로 변환하는 작업입니다.
 
-  const prompt = `
-다음은 MongoDB 컬렉션 목록입니다:
-${formattedCollections}
-
-사용자의 질문에 따라 MongoDB 콘솔 명령어를 생성해 주세요.
-가능하다면 aggregation, lookup도 활용하세요.
-명령어만 아래와 같은 형태로 반환하세요:
+💡 전제 조건:
+- MongoDB는 하나의 데이터베이스(my_database)를 사용합니다.
+- 아래 목록은 이 데이터베이스 내의 컬렉션 이름과 필드 구조입니다.
+- 'collection'이라는 컬렉션이 있다면, 이는 일반적인 MongoDB 용어와 혼동되지 않도록 주의해야 합니다.
+- 정확한 MongoDB 콘솔 명령어만 출력하세요 (예: \`db.users.find(...)\`).
+- 추가 설명은 출력하지 마세요.
+- 출력 형식은 반드시 다음을 지켜야 합니다:
 
 \`\`\`js
-db.<collection>.find(...)
+db.<collectionName>.find({ ... })
 \`\`\`
 
-질문: ${question}
-`;
+📂 컬렉션 목록:
+${formattedCollections}
 
-  const ollama = spawn("ollama", ["run", "llama3"]);
+🧠 사용자 질문:
+"${question}"
 
-  let output = "";
-  ollama.stdout.on("data", (data) => {
-    output += data.toString();
-  });
+💬 당신이 생성해야 할 MongoDB 콘솔 명령어는?`;
 
-  ollama.stdin.write(prompt);
-  ollama.stdin.end();
+  const messages: OpenAIChatMessage[] = [
+    {
+      role: "user",
+      content: prompt,
+    },
+  ];
 
-  ollama.on("close", () => {
-    const match = output.match(/```js\n([\s\S]*?)\n```/);
-    const fallback = output.replace(/```.*?\n?/g, "").trim();
-    res.json({
-      command: match ? match[1].trim() : fallback,
-    });
-  });
-
-  ollama.stderr.on("data", (err) => {
-    console.error("Ollama error:", err.toString());
-  });
+  try {
+    const response = await chatWithLlama(messages);
+    res.json({ command: response });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "LLM 응답 실패" });
+  }
 });
 
 export default router;
