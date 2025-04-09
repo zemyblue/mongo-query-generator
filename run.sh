@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# ollama 체크 및 실행
+if ! curl -s http://localhost:11434 > /dev/null; then
+  echo "🧠 Ollama가 실행되어 있지 않습니다. 백그라운드로 실행합니다..."
+  nohup ollama serve > ../logs/ollama.log 2>&1 &
+  sleep 2
+else
+  echo "✅ Ollama는 이미 실행 중입니다."
+fi
+
 echo "📦 서버 의존성 설치 중..."
 cd server && npm install && cd ..
 

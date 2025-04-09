@@ -5,19 +5,19 @@
 
 ---
 
-## 🧩 기능
+## 🤩 기능
 - 자연어 → MongoDB 명령어 자동 변환
 - Ollama + LLaMA3 기반 로컬 LLM 사용 (OpenAI 비용 無)
-- 프론트엔드: Vite + React + TypeScript
-- 백엔드: Express + TypeScript
+- 프러티엔드: Vite + React + TypeScript
+- 백어드: Express + TypeScript
 
 ---
 
-## 🛠️ 초기 설정 및 실행 방법
+## 🛠️ 처기 설정 및 실행 방법
 
 ### 1. GitHub 클론
 ```bash
-git clone https://github.com/your-username/mongo-query-generator.git
+git clone https://github.com/zemyblue/mongo-query-generator.git
 cd mongo-query-generator
 ```
 
@@ -30,14 +30,25 @@ brew install ollama
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-### 3. LLaMA3 모델 설치
+### 3. LLaMA3 모델 설치 및 실행 확인
 ```bash
-ollama run llama3
+# background에서 수동 실행하고 싶다면
+nohup ollama serve > logs/ollama.log 2>&1 &
+# 또는 자동 실행
+brew services start ollama
+
+# 모델 다운로드 (ollama가 실행되어 있어야 한다)
+ollama pull llama3
+
+# 실행 상태 확인 (정상일 경우 JSON 응답)
+curl http://localhost:11434
 ```
+
+> 프로젝트에서는 `./run.sh` 실행 시 Ollama가 켜져 있지 않으면 자동으로 Background에서 실행됩니다.
 
 ---
 
-### 4. 백엔드 실행
+### 4. 백어드 실행
 ```bash
 cd server
 cp .env.example .env  # 또는 직접 PORT 설정
@@ -49,7 +60,7 @@ npm run dev
 
 ---
 
-### 5. 프론트엔드 실행
+### 5. 프러티엔드 실행
 ```bash
 cd ../client
 npm install
@@ -60,26 +71,26 @@ npm run dev
 
 ---
 
-## 📦 MongoDB 컬렉션 정보 업데이트
+## 📦 MongoDB 컬러션 정보 업데이트
 
-현재 `server/src/routes/generate.ts` 파일에 컬렉션 정보가 하드코딩되어 있습니다.
+현재 `server/src/routes/generate.ts` 파일에 컬러션 정보가 하드코드되어 있습니다.
 
-예: 
+예:
 ```ts
-컬렉션 이름은 'users'이고, 필드는 email(string), name(string), created_at(date)
+컨러션 이름은 'users'이고, 필드는 email(string), name(string), created_at(date)
 ```
 
-이 부분을 추후 다음 방식으로 확장할 수 있습니다:
-- JSON 파일에서 컬렉션 목록을 불러오도록 변경
-- 또는 `/collections` API를 추가하여 프론트에서 등록/편집 가능하게 구성
+이 방면을 추후 다음 방식으로 확장할 수 있습니다:
+- JSON 파일에서 컬러션 목록을 불러오도록 변경
+- 또는 `/collections` API를 추가하여 프러티엔드에서 등록/편집 가능하게 구성
 
 필요 시 해당 기능도 추가로 지원 가능합니다.
 
 ---
 
-## 🚀 실행 방법 요약
+## 🚀 실행 방법 요조
 
-### ✅ 1. 로컬 개발 모드 실행 (스크립트 하나로 실행)
+### ✅ 1. 로컴 개발 모드 실행 (스크립트 하나로 실행)
 
 ```bash
 chmod +x run.sh
@@ -100,7 +111,7 @@ docker-compose up
 - 서버 URL: http://localhost:3001
 - 클라이언트 URL: http://localhost:5173
 
-> collections.json은 volume으로 마운트되어 있어 데이터가 유지됩니다.
+> collections.json은 volume으로 링크되어 있어 데이터가 유지됩니다.
 
 ---
 
@@ -114,3 +125,4 @@ npm install --save-dev @types/uuid
 ```
 
 > TypeScript는 외부 라이브러리의 타입 정보를 필요로 하며, 위 명령어는 `uuid`의 타입 정의를 추가합니다.
+
