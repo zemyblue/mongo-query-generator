@@ -1,0 +1,42 @@
+[
+  {
+    "id": "79dd2d60-84c3-4e35-89ce-b58df007dc74",
+    "name": "collection",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "address",
+        "type": "string"
+      },
+      {
+        "name": "created_at",
+        "type": "Instance"
+      }
+    ]
+  },
+  {
+    "id": "8f67ddb5-2e5b-4ddd-a53f-285070bc7093",
+    "name": "user",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "email",
+        "type": "string"
+      },
+      {
+        "name": "address",
+        "type": "string"
+      }
+    ]
+  }
+]
