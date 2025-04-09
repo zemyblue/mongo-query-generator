@@ -25,7 +25,7 @@ function App() {
       <button onClick={generateCommand}>명령어 생성</button>
       {command && (
         <pre style={{ marginTop: "1rem", background: "#f4f4f4", padding: "1rem" }}>
-          {command}
+          {command.replace(/^\s*js\s*/i, "").trim()}
         </pre>
       )}
     </div>

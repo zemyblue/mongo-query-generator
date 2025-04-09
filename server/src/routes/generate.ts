@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import { spawn } from "child_process";
 
@@ -11,9 +10,10 @@ router.post("/", async (req, res) => {
 너는 MongoDB 콘솔 명령어 생성기야.
 컬렉션 이름은 'users'이고, 필드는 email(string), name(string), created_at(date)야.
 아래 요청에 대해 MongoDB 콘솔 명령어를 생성해줘. 설명 없이 명령어만 아래 형식으로:
-\\`\\`\\`js
+
+\`\`\`js
 db.users.find({ ... })
-\\`\\`\\`
+\`\`\`
 
 요청: ${question}
 `;
@@ -29,12 +29,13 @@ db.users.find({ ... })
   ollama.stdin.end();
 
   ollama.on("close", () => {
-    const match = output.match(/```js\n([\s\S]*?)\n```/);
+    const match = output.match(/```(?:js)?\\n([\s\S]*?)\\n```/i);
+    const fallback = output.replace(/```.*?\n?/g, "").replace(/^js\\n?/i, "").trim();
     res.json({
-      command: match ? match[1].trim() : output.trim(),
+      command: match ? match[1].trim() : fallback,
     });
   });
-
+  
   ollama.stderr.on("data", (err) => {
     console.error("Ollama error:", err.toString());
   });
