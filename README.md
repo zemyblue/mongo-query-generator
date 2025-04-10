@@ -8,8 +8,8 @@
 ## 🤩 기능
 - 자연어 → MongoDB 명령어 자동 변환
 - Ollama + LLaMA3 기반 로컬 LLM 사용 (OpenAI 비용 無)
-- 프러티엔드: Vite + React + TypeScript
-- 백어드: Express + TypeScript
+- Frontend: Vite + React + TypeScript
+- Backend: Express + TypeScript
 
 ---
 
